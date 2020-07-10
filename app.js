@@ -36,7 +36,7 @@ menu.mainmenu = function () {
 menu.configsprint = function () {
     return new Promise(function (resolve) {
         for (let index = 0; index < configsobj.configs.paths.length; index++) {
-            console.log(`${index + 1}. ${configsobj.configs.names[index]} ( ${configsobj.configs.localnames[index]} )--> ${configsobj.configs.paths[index]}`)
+            console.log(`${index + 1}. ${configsobj.configs.names[index]} ( ${configsobj.configs.localnames[index]} ) --> ${configsobj.configs.paths[index]}`)
             //console.log(`${configsobj.configs.paths.length-1 == index}     |   ${configsobj.configs.paths.length}  |   ${index}`)
             if (configsobj.configs.paths.length - 1 == index) {
                 resolve(true)
@@ -50,17 +50,71 @@ menu.configsmenu = function () {
     return new Promise(function (resolve) {
         menu.configsprint().then(resofprint => {
             console.log("======================")
-            stdio.ask("1. Создать конфиг\n2. Удалить конфиг\n3. Скопировать конфиг\nВвод").then((answer) => {
+            stdio.ask("1. Создать конфиг\n2. Удалить конфиг\n3. Скопировать конфиг\n4. Назад в главное меню\nВвод").then((answer) => {
                 let intanswer = parseInt(answer, 10)
                 if (intanswer == 1) {
-                    
+                    menu.configcreate().then(() => {
+                        menu.init()
+                    })
                 } else if (intanswer == 2) {
 
                 } else if (intanswer == 3) {
 
+                } else if (intanswer == 4) {
+                    menu.init()
                 } else {
-
+                    menu.init()
                 }
+            })
+        })
+    })
+}
+menu.configcreate = function () {
+    return new Promise(function () {
+        console.log("\n======================\n|==СОЗДАНИЕ КОНФИГА==|\n======================")
+        stdio.ask("Введите название вашего конфига").then((configname) => {
+            stdio.ask("Введите доп. информацию для вашего конфига").then((localname) => {
+                stdio.ask("Введите ключ сообщества").then((token) => {
+                    stdio.ask("Введите ID сообщества").then((groupid) => {
+                        let intgroupid = parseInt(groupid, 10)
+                        stdio.ask("Желаете ли вы, использовать базу данных с известными файлами? (Да\\Нет)").then((useDataBase) => {
+                            let finalconfig = { files: [], group: {} }
+                            if (useDataBase == "Да" || useDataBase == "да" || useDataBase == "Y" || useDataBase == "y" || useDataBase == "Yes" || useDataBase == "yes") {
+                                finalconfig.files = require("./database.json")
+                            }
+                            finalconfig.localname = localname; finalconfig.group.token = token; finalconfig.group.id = intgroupid
+                            new Promise(function (resolve) {
+                                console.log("Теперь вы должны ввести путь к файлам \nПример - (C:\\\\myfolder\\myfile.txt || %AppData%\\..\\local\\myscript.js)\nЕсли вы захотите закончить ввод файлов, то введите 0")
+                                let addpathtoconfig = function add() {
+                                    return new Promise(function (resolve) {
+                                        stdio.ask("").then((a) => {
+                                            if (a == "0") {
+                                                resolve(0)
+                                            } else {
+                                                finalconfig.files[finalconfig.files] = a
+                                                add()
+                                            }
+                                        })
+                                    })
+                                }
+                                addpathtoconfig().then(() => {
+                                    resolve(true)
+                                })
+                            }).then(() => {
+                                finalconfig = JSON.stringify(finalconfig)
+                                fs.writeFile(`./configs/${configname}.json`, finalconfig, (err) => {
+                                    if (err) {
+                                        console.error(err)
+                                    }
+                                    menu.init()
+                                })
+                            })
+                            //stdio.ask("").then((a)=>{
+                            //    
+                            //})
+                        })
+                    })
+                })
             })
         })
     })
@@ -68,7 +122,7 @@ menu.configsmenu = function () {
 
 // Rats
 menu.ratdeleting = function () {
-    return new Promise(function(resolve) {
+    return new Promise(function (resolve) {
         if (true) {
             console.log("DELETING")
             resolve()
@@ -158,7 +212,7 @@ menu.ratcreating = function () {
 menu.ratmenu = function () {
     return new Promise(function () {
         console.log("===============\n|МЕНЮ РАТНИКОВ|\n===============")
-        stdio.ask("1. Создать ратник\n2. Удалить ратник\nВвод").then(answer => {
+        stdio.ask("1. Создать ратник\n2. Удалить ратник\n3. Назад в главное меню\nВвод").then(answer => {
             let intanswer = parseInt(answer, 10)
 
             if (intanswer == 1) {
@@ -169,6 +223,8 @@ menu.ratmenu = function () {
                 menu.ratdeleting().then(() => {
                     menu.init()
                 })
+            } else if (intanswer == 3) {
+                menu.init()
             } else {
                 menu.init()
             }
