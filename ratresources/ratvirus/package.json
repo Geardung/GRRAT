@@ -10,6 +10,7 @@
   "license": "ISC",
   "dependencies": {
     "fs-extra": "^8.1.0",
-    "node-vk-sdk": "^1.1.5"
+    "node-vk-sdk": "^1.1.5",
+    "yandex-disk": "0.0.8"
   }
 }

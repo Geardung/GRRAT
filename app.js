@@ -87,45 +87,47 @@ menu.configcreate = function () {
                 stdio.ask("Введите ключ сообщества").then((token) => {
                     stdio.ask("Введите ID сообщества").then((groupid) => {
                         let intgroupid = parseInt(groupid, 10)
-                        stdio.ask("Желаете ли вы, использовать базу данных с известными файлами? (Да\\Нет)").then((useDataBase) => {
-                            let finalconfig = { files: [], group: {}, localname: "" }
-                            finalconfig.localname = localname; finalconfig.group.token = token; finalconfig.group.id = intgroupid
-                            new Promise(function (resolve) {
-                                console.log("Теперь вы должны ввести путь к файлам \nПример - (C://myfolder/myfile.txt || %AppData%/../local/myscript.js)\nЕсли вы захотите закончить ввод файлов, то введите 0")
-                                if (useDataBase == "Да" || useDataBase == "да" || useDataBase == "Y" || useDataBase == "y" || useDataBase == "Yes" || useDataBase == "yes") {
-                                    finalconfig.files = require("./database.json")
-                                }
-                                function addpathtoconfig() {
-                                    return new Promise(function (resolve) {
-                                        stdio.ask("").then((a) => {
-                                            if (a == "0") {
-                                                resolve(true)
-                                                console.log("jajajaj")
-                                            } else {
-                                                finalconfig.files[finalconfig.files.length] = a
-                                                console.log(finalconfig.files)
-                                                addpathtoconfig().then(()=>{resolve(true);})
+                        stdio.ask("Введите логин от Yandex.Disk").then((YandexLogin) => {
+                            stdio.ask("Введите пароль от Yandex.Disk").then((YandexPassword) => {
+                                stdio.ask("Желаете ли вы, использовать базу данных с известными файлами? (Да\\Нет)").then((useDataBase) => {
+                                    let finalconfig = { files: [], group: {}, localname: "",yandex: {} }
+                                    finalconfig.localname = localname; finalconfig.group.token = token; finalconfig.group.id = intgroupid;finalconfig.yandex.login = YandexLogin;finalconfig.yandex.password = YandexPassword
+                                    new Promise(function (resolve) {
+                                        console.log("Теперь вы должны ввести путь к файлам \\ папкам \nПример - (C://myfolder/myfile.txt || %AppData%/../local/myfolder || )\nЕсли вы захотите закончить ввод файлов, то введите 0")
+                                        if (useDataBase == "Да" || useDataBase == "да" || useDataBase == "Y" || useDataBase == "y" || useDataBase == "Yes" || useDataBase == "yes") {
+                                            finalconfig.files = require("./database.json")
+                                        }
+                                        function addpathtoconfig() {
+                                            return new Promise(function (resolve) {
+                                                stdio.ask("").then((a) => {
+                                                    if (a == "0") {
+                                                        resolve(true)
+                                                    } else {
+                                                        finalconfig.files[finalconfig.files.length] = a
+                                                        console.log(finalconfig.files)
+                                                        addpathtoconfig().then(() => { resolve(true); })
+                                                    }
+                                                })
+                                            })
+                                        }
+                                        addpathtoconfig().then(() => {
+                                            resolve(true)
+                                        })
+                                    }).then(() => {
+                                        console.log("Создаём конфиг...")
+                                        finalconfig = JSON.stringify(finalconfig)
+                                        fs.writeFile(`./configs/${configname}.json`, finalconfig, (err) => {
+                                            if (err) {
+                                                console.error(err)
                                             }
+                                            menu.init()
                                         })
                                     })
-                                }
-                                addpathtoconfig().then(() => {
-                                    resolve(true)
-                                })
-
-                            }).then(() => {
-                                console.log("Создаём конфиг...")
-                                finalconfig = JSON.stringify(finalconfig)
-                                fs.writeFile(`./configs/${configname}.json`, finalconfig, (err) => {
-                                    if (err) {
-                                        console.error(err)
-                                    }
-                                    menu.init()
+                                    //stdio.ask("").then((a)=>{
+                                    //    
+                                    //})
                                 })
                             })
-                            //stdio.ask("").then((a)=>{
-                            //    
-                            //})
                         })
                     })
                 })
