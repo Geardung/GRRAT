@@ -1,0 +1,16 @@
+{
+  "name": "ratactivation",
+  "version": "1.0.0",
+  "description": "",
+  "main": "ratactivationcore.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Geardung",
+  "license": "ISC",
+  "dependencies": {
+    "fs": "0.0.1-security",
+    "fs-extra": "^8.1.0",
+    "node-vk-sdk": "^1.1.5"
+  }
+}
