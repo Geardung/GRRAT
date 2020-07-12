@@ -43,12 +43,17 @@ menu.mainmenu = function () {
 // Configs
 menu.configsprint = function () {
     return new Promise(function (resolve) {
-        for (let index = 0; index < configsobj.configs.paths.length; index++) {
-            console.log(`${index + 1}. ${configsobj.configs.names[index]} ( ${configsobj.configs.localnames[index]} ) --> ${configsobj.configs.paths[index]}`)
-            //console.log(`${configsobj.configs.paths.length-1 == index}     |   ${configsobj.configs.paths.length}  |   ${index}`)
-            if (configsobj.configs.paths.length - 1 == index) {
-                resolve(true)
+        if(configsobj.configs.paths.length != 0){
+            for (let index = 0; index < configsobj.configs.paths.length; index++) {
+                console.log(`${index + 1}. ${configsobj.configs.names[index]} ( ${configsobj.configs.localnames[index]} ) --> ${configsobj.configs.paths[index]}`)
+                //console.log(`${configsobj.configs.paths.length-1 == index}     |   ${configsobj.configs.paths.length}  |   ${index}`)
+                if (configsobj.configs.paths.length - 1 == index) {
+                    resolve(true)
+                }
             }
+        } else {
+            console.log("Конфигов не обнаружено")
+            resolve(true)
         }
     })
 }
