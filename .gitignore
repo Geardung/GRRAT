@@ -1,3 +1,5 @@
 configs
 ratexes
 installers
+translations/selected.json
+.npmrc

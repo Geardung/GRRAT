@@ -1,0 +1,10 @@
+{
+    "localname": "English",
+    "translation":
+    {
+        "mainmenu":
+        {
+            "top": "==============\n|MAIN MENU|\n=============="
+        }
+    }
+}
