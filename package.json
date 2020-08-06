@@ -2,7 +2,7 @@
   "name": "@geardung/grrat",
   "version": "1.0.0",
   "description": "ratvirus",
-  "main": "RatCreator.js",
+  "main": "app.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
@@ -18,12 +18,11 @@
     "stdio": "^2.1.1"
   },
   "devDependencies": {},
-  "repository": {
-    "type": "http",
-    "url": "https://registry.npmjs.org/"
-  },
   "keywords": [
     "Geardung"
   ],
-  "publishConfig": { "registry": "https://npm.pkg.github.com/" }
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/geardung/grrat.git"
+  }
 }
