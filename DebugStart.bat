@@ -1,3 +1,3 @@
 @echo off
-node app.js -debug
+node app.js -debug -russian
 pause
