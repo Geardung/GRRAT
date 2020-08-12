@@ -1,6 +1,9 @@
 const fs = require("fs-extra")
 const stdio = require("stdio")
 
+const debugmode = process.argv[2]
+const forcelanguage = process.argv[3]
+
 var configsobj = {
     configsfolderpath: `${__dirname}\\configs`,
     configs: {
@@ -20,10 +23,8 @@ var langsobj = {
     },
     nowlagnint: 0
 }
-var nowlang
 
-const debugmode = process.argv[2]
-const forcelanguage = process.argv[3]
+var nowlang
 
 var menu = {}
 
