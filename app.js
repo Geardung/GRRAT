@@ -462,7 +462,6 @@ fs.exists(configsobj.configsfolderpath, isHereConfigsFolder => {
         newarr.shift()
         newarr.shift()
         if (newarr.length != 0) {
-
             newarr.forEach(element => {
                 console.log("ARGV LOADING   " + element)
                 if (element != "node" || element != "core.js") {
@@ -474,8 +473,6 @@ fs.exists(configsobj.configsfolderpath, isHereConfigsFolder => {
                     }
                 }
                 counter++
-
-                //console.log(` process.argv.length-3 == counter ${process.argv.length-3 == counter} | process.argv.length-3 ${process.argv.length-3} | counter ${counter} | process.argv.length ${process.argv.length}`)
                 if (process.argv.length == counter) {
                     resolve(true)
                 }
