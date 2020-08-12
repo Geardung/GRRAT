@@ -204,9 +204,6 @@ menu.configcreate = function () {// full ready
 menu.configdelete = function () { // not ready
 
 }
-menu.configcopy = function () { // not ready
-
-}
 
 // Rats
 menu.ratdeleting = function () { // not ready
