@@ -22,7 +22,7 @@ var langsobj = {
         translations: []
     },
     nowlagnint: 0,
-    langsarray: ["-russian","-english"]
+    langsarray: ["-russian", "-english"]
 }
 
 var nowlang
@@ -457,21 +457,32 @@ menu.init = function () {// full ready
 }
 fs.exists(configsobj.configsfolderpath, isHereConfigsFolder => {
     new Promise((resolve) => {
-        process.argv.forEach(element => {
-            if (element != "node" || element != "core.js") {
-                if (element == "-debug") {
-                    debugmode = element
+        let counter = 0
+        let newarr = process.argv
+        newarr.shift()
+        newarr.shift()
+        if (newarr.length != 0) {
+
+            newarr.forEach(element => {
+                console.log("ARGV LOADING   " + element)
+                if (element != "node" || element != "core.js") {
+                    if (element == "-debug") {
+                        debugmode = element
+                    }
+                    if (langsobj.langsarray.includes(element)) {
+                        forcelanguage = element
+                    }
                 }
-                if (langsobj.langsarray.includes(element)) {
-                    forcelanguage = element
+                counter++
+
+                //console.log(` process.argv.length-3 == counter ${process.argv.length-3 == counter} | process.argv.length-3 ${process.argv.length-3} | counter ${counter} | process.argv.length ${process.argv.length}`)
+                if (process.argv.length == counter) {
+                    resolve(true)
                 }
-            }
-        }).then(()=>{
-            if(forcelanguage == undefined){
-                forcelanguage = "-russian"
-            }
+            })
+        } else {
             resolve(true)
-        })
+        }
     }).then(() => {
         console.log(`Debug: ${debugmode} | Language Force selected: ${forcelanguage}`)
         if (isHereConfigsFolder) {
