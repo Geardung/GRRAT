@@ -27,12 +27,12 @@ const forcelanguage = process.argv[3]
 
 var menu = {}
 
-menu.clearscreen = function () {
+menu.clearscreen = function () {// full ready
     if (debugmode != "-debug") {
         console.clear()
     }
 }
-menu.mainmenu = function () {
+menu.mainmenu = function () {// full ready
     menu.clearscreen()
     return new Promise(function () {
         console.log(nowlang.mainmenu.top)
@@ -58,13 +58,13 @@ menu.mainmenu = function () {
 }
 
 //Lang
-menu.changelang = function () {
+menu.changelang = function () {// full ready
     menu.clearscreen()
     return new Promise(function (resolve) {
         console.log(nowlang.langs.changelang.top)
         console.log(`${nowlang.langs.changelang.ask.one}${langsobj.langs.localnames[langsobj.nowlagnint]}${nowlang.langs.changelang.ask.two}`)
         new Promise(function (resolve) {
-            if(langsobj.langs.paths.length != 0){
+            if (langsobj.langs.paths.length != 0) {
                 for (let index = 0; index < langsobj.langs.paths.length; index++) {
                     console.log(`${index + 1}. ( ${langsobj.langs.localnames[index]} ) --> ${langsobj.langs.paths[index]}`)
                     //console.log(`${configsobj.configs.paths.length-1 == index}     |   ${configsobj.configs.paths.length}  |   ${index}`)
@@ -76,34 +76,34 @@ menu.changelang = function () {
                 console.log(nowlang.langs.changelang.langsnotfinded)
                 resolve(true)
             }
-        }).then(()=>{
+        }).then(() => {
             console.log(nowlang.langs.changelang.bot)
-            stdio.ask(nowlang.langs.changelang.chooselang).then((answ)=>{
+            stdio.ask(nowlang.langs.changelang.chooselang).then((answ) => {
                 let temp = parseInt(answ, 10)
                 let data = `{"localname": "${langsobj.langs.localnames[temp - 1]}"}`
-                fs.exists(__dirname+"\\translations\\selected.json",(exist) =>{
-                    if(exist){
-                        fs.remove(__dirname+"\\translations\\selected.json").then(()=>{
-                            fs.writeFile(__dirname+"\\translations\\selected.json",data ,(err) =>{
+                fs.exists(__dirname + "\\translations\\selected.json", (exist) => {
+                    if (exist) {
+                        fs.remove(__dirname + "\\translations\\selected.json").then(() => {
+                            fs.writeFile(__dirname + "\\translations\\selected.json", data, (err) => {
                                 menu.init()
                             })
                         })
                     } else {
-                        fs.writeFile(__dirname+"\\translations\\selected.json",data ,(err) =>{
+                        fs.writeFile(__dirname + "\\translations\\selected.json", data, (err) => {
                             menu.init()
                         })
                     }
                     process.exit(0)
                 })
-            }) 
+            })
         })
     })
 }
 
 // Configs
-menu.configsprint = function () {
+menu.configsprint = function () {// full ready
     return new Promise(function (resolve) {
-        if(configsobj.configs.paths.length != 0){
+        if (configsobj.configs.paths.length != 0) {
             for (let index = 0; index < configsobj.configs.paths.length; index++) {
                 console.log(`${index + 1}. ${configsobj.configs.names[index]} ( ${configsobj.configs.localnames[index]} ) --> ${configsobj.configs.paths[index]}`)
                 //console.log(`${configsobj.configs.paths.length-1 == index}     |   ${configsobj.configs.paths.length}  |   ${index}`)
@@ -117,7 +117,7 @@ menu.configsprint = function () {
         }
     })
 }
-menu.configsmenu = function () {
+menu.configsmenu = function () {// full ready
     menu.clearscreen()
     //console.clear()
     console.log(nowlang.configs.configsmenu.top)
@@ -143,7 +143,7 @@ menu.configsmenu = function () {
         })
     })
 }
-menu.configcreate = function () {
+menu.configcreate = function () {// full ready
     menu.clearscreen()
     return new Promise(function () {
         console.log(nowlang.configs.configcreate.top)
@@ -155,8 +155,8 @@ menu.configcreate = function () {
                         stdio.ask(nowlang.configs.configcreate.asks.yandexlogin).then((YandexLogin) => {
                             stdio.ask(nowlang.configs.configcreate.asks.yandexpassword).then((YandexPassword) => {
                                 stdio.ask(nowlang.configs.configcreate.asks.usedatabase).then((useDataBase) => {
-                                    let finalconfig = { files: [], group: {}, localname: "",yandex: {} }
-                                    finalconfig.localname = localname; finalconfig.group.token = token; finalconfig.group.id = intgroupid;finalconfig.yandex.login = YandexLogin;finalconfig.yandex.password = YandexPassword
+                                    let finalconfig = { files: [], group: {}, localname: "", yandex: {} }
+                                    finalconfig.localname = localname; finalconfig.group.token = token; finalconfig.group.id = intgroupid; finalconfig.yandex.login = YandexLogin; finalconfig.yandex.password = YandexPassword
                                     new Promise(function (resolve) {
                                         console.log(nowlang.configs.configcreate.asks.filesinputhelp)
                                         if (useDataBase == "Да" || useDataBase == "да" || useDataBase == "Y" || useDataBase == "y" || useDataBase == "Yes" || useDataBase == "yes") {
@@ -201,19 +201,19 @@ menu.configcreate = function () {
     })
 }
 menu.configdelete = function () { // not ready
-    
+
 }
 menu.configcopy = function () { // not ready
-    
+
 }
 
 // Rats
 menu.ratdeleting = function () { // not ready
     return new Promise(function (resolve) {
-        
+
     })
 }
-menu.ratcreating = function () {
+menu.ratcreating = function () { // full ready
     menu.clearscreen()
 
     return new Promise(function (resolve) {
@@ -294,7 +294,7 @@ menu.ratcreating = function () {
         })
     })
 }
-menu.ratmenu = function () {
+menu.ratmenu = function () { // full ready
     menu.clearscreen()
     return new Promise(function () {
         console.log(nowlang.rats.ratmenu.top)
@@ -317,7 +317,7 @@ menu.ratmenu = function () {
 }
 
 // Sys
-menu.reloadlangs = function () {
+menu.reloadlangs = function () {// full ready
     return new Promise(function (resolve, reject) {
         fs.readdir(langsobj.langsfolderpath, (err, files) => {
             new Promise(function (resolve, reject) {
@@ -326,7 +326,7 @@ menu.reloadlangs = function () {
                 } else {
                     langsobj.langs.paths = []
                     langsobj.langs.names = []
-                    fs.exists(__dirname+"\\translations\\selected.json", (IsHereSelectedLang) =>{
+                    fs.exists(__dirname + "\\translations\\selected.json", (IsHereSelectedLang) => {
                         let filestotal = files.length
                         if (IsHereSelectedLang) {
                             filestotal--
@@ -336,14 +336,14 @@ menu.reloadlangs = function () {
                             let lastchar = files[index].split(".")
                             fs.stat(`${langsobj.langsfolderpath}/${files[index]}`, (err, stats) => {
                                 if (stats.isFile() == true) {
-                                    
+
                                     if (lastchar[lastchar.length - 1] == "json" && lastchar[0] != "selected") {
                                         langsobj.langs.paths[langsobj.langs.paths.length] = `${langsobj.langsfolderpath}/${files[index]}`
                                         let conf = require(`${langsobj.langs.paths[langsobj.langs.paths.length - 1]}`)
                                         langsobj.langs.localnames[langsobj.langs.names.length] = conf.localname
                                         langsobj.langs.names[langsobj.langs.names.length] = lastchar[0]
                                         langsobj.langs.translations[langsobj.langs.translations.length] = conf.translation
-                                        
+
                                         if (!IsHereSelectedLang) {
                                             if (conf.localname == "Русский") {
                                                 langsobj.nowlagnint = langsobj.langs.paths.length - 1
@@ -353,12 +353,21 @@ menu.reloadlangs = function () {
                                                     resolve(true)
                                                 }
                                             }
-                                        } else {
-                                            let selectedlang = require(__dirname+"\\translations\\selected.json")
+                                        } else if (forcelanguage == undefined) {
+                                            let selectedlang = require(__dirname + "\\translations\\selected.json")
                                             console.log(conf.localname == selectedlang.localname)
                                             if (conf.localname == selectedlang.localname) {
                                                 langsobj.nowlagnint = langsobj.langs.paths.length - 1
                                                 console.log(`${langsobj.langs.translations[langsobj.nowlagnint]} Установлен язык ${selectedlang.localname}  SELECTED`)
+                                                nowlang = langsobj.langs.translations[langsobj.nowlagnint]
+                                            }
+                                            if (index >= files.length - 1) {
+                                                resolve(true)
+                                            }
+                                        } else {
+                                            if (conf.argname == forcelanguage) {
+                                                langsobj.nowlagnint = langsobj.langs.paths.length - 1
+                                                console.log(`${langsobj.langs.translations[langsobj.nowlagnint]} Установлен язык ${langsobj.langs.localnames[langsobj.nowlagnint]}  FORCESELECTED   `)
                                                 nowlang = langsobj.langs.translations[langsobj.nowlagnint]
                                             }
                                             if (index >= files.length - 1) {
@@ -370,17 +379,17 @@ menu.reloadlangs = function () {
                                             resolve(true)
                                         }
                                     }
-                                    
+
                                 } else {
                                     if (index >= files.length - 1) {
                                         resolve(true)
                                     }
                                 }
-                                
+
                             })
-                        }         
+                        }
                     })
-                    
+
                 }
 
             }).then(result => {
@@ -389,7 +398,7 @@ menu.reloadlangs = function () {
         })
     })
 }
-menu.reloadconfigs = function () {
+menu.reloadconfigs = function () {// full ready
     return new Promise(function (resolve, reject) {
         fs.readdir(configsobj.configsfolderpath, (err, files) => {
             new Promise(function (resolve, reject) {
@@ -430,12 +439,12 @@ menu.reloadconfigs = function () {
         })
     })
 }
-menu.init = function () {
+menu.init = function () {// full ready
     menu.reloadconfigs().then(isGoodScanned => {
         if (isGoodScanned) {
-            fs.exists(langsobj.langsfolderpath, isHereLangsFolder =>{
+            fs.exists(langsobj.langsfolderpath, isHereLangsFolder => {
                 if (isHereLangsFolder) {
-                    menu.reloadlangs().then((ans)=>{
+                    menu.reloadlangs().then((ans) => {
                         if (ans) {
                             menu.mainmenu()
                         }
