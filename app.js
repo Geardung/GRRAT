@@ -1,8 +1,8 @@
 const fs = require("fs-extra")
 const stdio = require("stdio")
 
-const debugmode = process.argv[2]
-const forcelanguage = process.argv[3]
+var debugmode = process.argv[2]
+var forcelanguage = process.argv[3]
 
 var configsobj = {
     configsfolderpath: `${__dirname}\\configs`,
@@ -21,7 +21,8 @@ var langsobj = {
         localnames: [],
         translations: []
     },
-    nowlagnint: 0
+    nowlagnint: 0,
+    langsarray: ["-russian","-english"]
 }
 
 var nowlang
@@ -455,18 +456,36 @@ menu.init = function () {// full ready
     })
 }
 fs.exists(configsobj.configsfolderpath, isHereConfigsFolder => {
-    console.log(`Debug: ${debugmode} | Language Force selected: ${forcelanguage}`)
-    if (isHereConfigsFolder) {
-        menu.init()
-    } else {
-        console.log(nowlang.sys.start.configfoldernonfinded + __dirname)
-        fs.mkdir(configsobj.configsfolderpath, err => {
-            if (err) {
-
-            } else {
-                console.log(nowlang.sys.start.configfolderhasbeencreated)
-                menu.init()
+    new Promise((resolve) => {
+        process.argv.forEach(element => {
+            if (element != "node" || element != "core.js") {
+                if (element == "-debug") {
+                    debugmode = element
+                }
+                if (langsobj.langsarray.includes(element)) {
+                    forcelanguage = element
+                }
             }
+        }).then(()=>{
+            if(forcelanguage == undefined){
+                forcelanguage = "-russian"
+            }
+            resolve(true)
         })
-    }
+    }).then(() => {
+        console.log(`Debug: ${debugmode} | Language Force selected: ${forcelanguage}`)
+        if (isHereConfigsFolder) {
+            menu.init()
+        } else {
+            console.log("config folder non finded " + __dirname)
+            fs.mkdir(configsobj.configsfolderpath, err => {
+                if (err) {
+
+                } else {
+                    console.log("config folder has been created")
+                    menu.init()
+                }
+            })
+        }
+    })
 })
