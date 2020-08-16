@@ -3,3 +3,5 @@ ratexes
 installers
 translations/selected.json
 .npmrc
+package.json
+package-lock.json
