@@ -24,8 +24,15 @@ var langsobj = {
     nowlagnint: 0,
     langsarray: ["-russian", "-english"]
 }
-
 var nowlang
+
+function debugmsg(text, force) {
+    if (debugmode == "-debug" || debugmode == true || force) {
+        var today = new Date();
+        var time = today.getHours() + ":" + today.getMinutes() + ":" + today.getSeconds();
+        console.log(`[${time}] ${text}`)
+    }
+}
 
 var menu = {}
 
@@ -69,7 +76,7 @@ menu.changelang = function () {// full ready
             if (langsobj.langs.paths.length != 0) {
                 for (let index = 0; index < langsobj.langs.paths.length; index++) {
                     console.log(`${index + 1}. ( ${langsobj.langs.localnames[index]} ) --> ${langsobj.langs.paths[index]}`)
-                    //console.log(`${configsobj.configs.paths.length-1 == index}     |   ${configsobj.configs.paths.length}  |   ${index}`)
+                    debugmsg(`${configsobj.configs.paths.length - 1 == index}     |   ${configsobj.configs.paths.length}  |   ${index}`)
                     if (langsobj.langs.paths.length - 1 == index) {
                         resolve(true)
                     }
@@ -80,23 +87,18 @@ menu.changelang = function () {// full ready
             }
         }).then(() => {
             console.log(nowlang.langs.changelang.bot)
+            debugmsg(langsobj.langs.localnames, false)
             stdio.ask(nowlang.langs.changelang.chooselang).then((answ) => {
                 let temp = parseInt(answ, 10)
                 let data = `{"localname": "${langsobj.langs.localnames[temp - 1]}"}`
-                fs.exists(__dirname + "\\translations\\selected.json", (exist) => {
-                    if (exist) {
-                        fs.remove(__dirname + "\\translations\\selected.json").then(() => {
-                            fs.writeFile(__dirname + "\\translations\\selected.json", data, (err) => {
-                                menu.init()
-                            })
-                        })
-                    } else {
-                        fs.writeFile(__dirname + "\\translations\\selected.json", data, (err) => {
-                            menu.init()
-                        })
-                    }
-                    process.exit(0)
+                debugmsg(langsobj.langs.localnames[temp - 1])
+                debugmsg(data)
+                fs.writeFile(__dirname + "\\translations\\selected.json", data, (err) => {
+                    menu.init()
                 })
+                //fs.exists(__dirname + "\\translations\\selected.json", (exist) => {
+                //    process.exit(0)
+                //})
             })
         })
     })
@@ -108,7 +110,7 @@ menu.configsprint = function () {// full ready
         if (configsobj.configs.paths.length != 0) {
             for (let index = 0; index < configsobj.configs.paths.length; index++) {
                 console.log(`${index + 1}. ${configsobj.configs.names[index]} ( ${configsobj.configs.localnames[index]} ) --> ${configsobj.configs.paths[index]}`)
-                //console.log(`${configsobj.configs.paths.length-1 == index}     |   ${configsobj.configs.paths.length}  |   ${index}`)
+                debugmsg(`${configsobj.configs.paths.length - 1 == index}     |   ${configsobj.configs.paths.length}  |   ${index}`)
                 if (configsobj.configs.paths.length - 1 == index) {
                     resolve(true)
                 }
@@ -134,8 +136,8 @@ menu.configsmenu = function () {// full ready
                     })
                 } else if (intanswer == 2) {
 
-                } else if (intanswer == 3) {
-
+                } else if (intanswer == undefined) {
+                    menu.init()
                 } else if (intanswer == 4) {
                     menu.init()
                 } else {
@@ -185,7 +187,7 @@ menu.configcreate = function () {// full ready
                                         finalconfig = JSON.stringify(finalconfig)
                                         fs.writeFile(`./configs/${configname}.json`, finalconfig, (err) => {
                                             if (err) {
-                                                console.error(err)
+                                                debugmsg(err)
                                             }
                                             menu.init()
                                         })
@@ -211,21 +213,20 @@ menu.ratdeleting = function () { // not ready
     let ratsobj = {
         arr: []
     }
-    let counter
+    let counter = 0
+
     return new Promise(function (resolve) {
-        fs.readdir("./ratexes", (err, files) => {
+        fs.readdir(__dirname + "/ratexes", (err, files) => {
             if (files.length == 0) {
                 resolve(true)
             } else {
-                console.log("Lol")
                 files.forEach(nazvratnika => {
                     fs.stat(__dirname + "/ratexes/" + nazvratnika, (err, stats) => {
                         if (stats.isDirectory()) {
                             fs.exists(__dirname + "/ratexes/" + nazvratnika + "/LICENSE.md", exist => {
                                 if (exist) {
-                                    console.log("Lol")
-                                    let localnamerat = nazvratnika.split("/")
-                                    ratsobj.arr[ratsobj.arr.length] = [nazvratnika, localnamerat]
+                                    console.log(nazvratnika)
+                                    ratsobj.arr[ratsobj.arr.length] = [`${__dirname}/ratexes/${nazvratnika}`, nazvratnika]
                                 }
                             })
                         }
@@ -239,6 +240,19 @@ menu.ratdeleting = function () { // not ready
         })
     }).then(() => {
         console.log(ratsobj)
+        console.log("==================\n|Удаление Ратника|\n==================")``
+        let counter = 0
+        new Promise((resolve) => {
+            ratsobj.arr.forEach(element => {
+                console.log(`${counter + 1}. ${element[1]} [ ${element[0]} ]`)
+                counter++
+                if (counter == element.length - 1) {
+                    resolve(true)
+                }
+            })
+        }).then(() => {
+
+        })
     })
 }
 menu.ratcreating = function () { // full ready
@@ -455,6 +469,7 @@ menu.init = function () {// full ready
     })
 }
 fs.exists(configsobj.configsfolderpath, isHereConfigsFolder => {
+    debugmsg("GRrat start!", true)
     new Promise((resolve) => {
         let counter = 0
         let newarr = process.argv
