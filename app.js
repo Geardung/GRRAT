@@ -135,6 +135,7 @@ menu.configsmenu = function () {// full ready
                         menu.init()
                     })
                 } else if (intanswer == 2) {
+                    menu.init()
 
                 } else if (intanswer == undefined) {
                     menu.init()
@@ -318,9 +319,10 @@ menu.ratmenu = function () { // full ready
                     menu.init()
                 })
             } else if (intanswer == 2) {
-                menu.ratdeleting().then(() => {
-                    menu.init()
-                })
+                menu.init()
+                //menu.ratdeleting().then(() => {
+                //    menu.init()
+                //})
             } else {
                 menu.init()
             }
